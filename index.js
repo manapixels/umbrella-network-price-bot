@@ -1,19 +1,3 @@
-// const WEBHOOK_SECRET = '50355f771159164b165d50bdd480ac51f27a0a2c4a9ebe929bde17be7989c9232c051891fdb6360c657cf43771b151cc';
-// const crypto = require('crypto');
-// function verifySignature (body, signature) {
-//     const digest = crypto
-//         .createHmac('sha1', WEBHOOK_SECRET)
-//         .update(body)
-//         .digest('hex');
-//     return signature === digest;
-// };
-// app.post('/webhooks', function (req, res, next) {
-//     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
-//         // verification failed
-//     }
-//     // verification success
-// });
-
 require('dotenv').config()
 
 

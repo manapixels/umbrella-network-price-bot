@@ -28,12 +28,14 @@ function verifySignature (body, signature) {
     return signature === digest;
 };
 app.post('/webhooks', function (req, res, next) {
+    logger.info(res, req)
+    console.log(res, req)
+    
     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
         // verification failed
     }
-    logger.info(res)
-    console.log(res)
-    mentionHook.send("You were mentioned!");
+    
+    tawkWebhook.send("You were mentioned!");
     // verification success
 });
 app.listen(process.env.PORT || 3000, function () {
