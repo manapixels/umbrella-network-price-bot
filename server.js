@@ -29,9 +29,7 @@ function verifySignature (body, signature) {
 };
 
 app.post('/webhooks', function (req, res, next) {
-    req.json().then((response) => {
-        console.log(response)
-    })
+    console.log(req.rawBody)
     
     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
         // verification failed
