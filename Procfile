@@ -1,2 +1,2 @@
 web: node server.js
-bot: node index.js
+bot: node bot.js
