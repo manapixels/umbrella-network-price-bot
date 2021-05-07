@@ -33,9 +33,10 @@ function verifySignature (body, signature) {
 
 app.post('/webhooks', function (req, res, next) {
     
+    console.log(req)
     if (req.body) {
         const json = req.body
-        console.log('req body', req.body, 'eventType', json.event)
+        console.log('req body', req.body, 'eventType', json.event, json.event === 'chat:start')
         if (json.event === 'chat:start') {
             console.log('Chat started by ' + json.visitor && json.visitor.name + ' from ' + json.visitor && json.visitor.country)
             console.log('Message: ', json.message && json.message.text)
