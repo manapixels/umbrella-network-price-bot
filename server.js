@@ -28,13 +28,20 @@ function verifySignature (body, signature) {
         .createHmac('sha1', process.env.TAWK_WEBHOOK_SECRET)
         .update(body)
         .digest('hex');
-    console.log('digest', digest, 'signature', signature)
     return signature === digest;
 };
 
 app.post('/webhooks', function (req, res, next) {
-    console.log('req body', req.body)
-    if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
+    if (req.body) {
+        console.log('req body', req.body)
+        const json = req.body
+        if (json.event === 'chat:start') {
+            console.log('Chat started by ' + json.visitor && json.visitor.name + ' from ' + json.visitor && json.visitor.country)
+        }
+        
+    }
+    
+    if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
         // verification failed
         console.log('failed verification')
     }
