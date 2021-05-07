@@ -38,9 +38,14 @@ app.post('/webhooks', function (req, res, next) {
         // console.log('req body', json, 'eventType', json['event'])
         if (json['event'] === 'chat:start') {
             const embed = new Discord.MessageEmbed()
-                .setTitle('Some Title')
                 .setColor('#0099ff')
-                .setDescription(json['message']['text']);
+                .setTitle('New chat')
+                .setDescription(json['message']['text'])
+                .addFields(
+                    { name: 'Name', value: json['visitor']['name'], inline: true },
+                    { name: 'Email', value: json['visitor']['email'], inline: true },
+                    { name: 'From', value: json['visitor']['country'], inline: true }
+                )
 
             discordWebhook.send('Test', { 
                 username: 'some-username',
