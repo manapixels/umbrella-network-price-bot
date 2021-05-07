@@ -16,7 +16,7 @@ var Discord = require('discord.js');
 const tawkWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
 
 const express = require('express');
-const app = express.Router();
+const app = express();
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
