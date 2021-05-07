@@ -27,8 +27,9 @@ function verifySignature (body, signature) {
         .digest('hex');
     return signature === digest;
 };
+
 app.post('/webhooks', function (req, res, next) {
-    res.json().then((response) => {
+    req.json().then((response) => {
         console.log(response)
     })
     
