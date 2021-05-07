@@ -20,7 +20,6 @@ const app = express();
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
-    logger.info(body)
     const digest = crypto
         .createHmac('sha1', process.env.TAWK_WEBHOOK_SECRET)
         .update(body)
@@ -29,8 +28,7 @@ function verifySignature (body, signature) {
 };
 
 app.post('/webhooks', function (req, res, next) {
-    console.log(req.rawBody)
-    
+    console.log(req.payload, res.payload)
     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
         // verification failed
     }
