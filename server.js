@@ -47,9 +47,9 @@ app.post('/webhooks', function (req, res, next) {
                     { name: 'From', value: json['visitor']['country'], inline: true }
                 )
 
-            discordWebhook.send('Test', { 
-                username: 'some-username',
-	            avatarURL: 'https://i.imgur.com/wSTFkRM.png',
+            discordWebhook.send({ 
+                username: 'Selfi Support',
+	            avatarURL: 'https://i.imgur.com/c381fE2.png',
                 embeds: [embed]
                 // embeds: [{
                 //     color: '#0099ff',
