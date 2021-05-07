@@ -32,13 +32,14 @@ function verifySignature (body, signature) {
 };
 
 app.post('/webhooks', function (req, res, next) {
+    
     if (req.body) {
-        console.log('req body', req.body)
         const json = req.body
+        console.log('req body', req.body, 'eventType', json.event)
         if (json.event === 'chat:start') {
             console.log('Chat started by ' + json.visitor && json.visitor.name + ' from ' + json.visitor && json.visitor.country)
+            console.log('Message: ', json.message && json.message.text)
         }
-        
     }
     
     if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
