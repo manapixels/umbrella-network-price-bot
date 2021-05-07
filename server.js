@@ -13,7 +13,7 @@ logger.level = 'debug';
 // Initialize Discord Bot
 //
 var Discord = require('discord.js');
-const tawkWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
+const discordWebhook = new Discord.WebhookClient('840090366741053490', 'p75U1289Qzik-_mPSLWKv4ExNw-G2Ck3O-vExupmPdw9EeK7-dE8RZpnKPwP4iPG8kUx');
 
 //
 // Dependencies
@@ -35,21 +35,38 @@ app.post('/webhooks', function (req, res, next) {
     
     if (req['body']) {
         const json = req['body']
-        console.log('req body', json, 'eventType', json['event'])
+        // console.log('req body', json, 'eventType', json['event'])
         if (json['event'] === 'chat:start') {
-            console.log('Chat started by ' + json['visitor']['name'] + ' from ' + json['visitor']['country'])
-            console.log('Message: ' + json['message']['text'])
+            const embed = new Discord.MessageEmbed()
+                .setTitle('Some Title')
+                .setColor('#0099ff')
+                .setDescription(json['message']['text']);
+
+            discordWebhook.send('Test', { 
+                username: 'some-username',
+	            avatarURL: 'https://i.imgur.com/wSTFkRM.png',
+                embeds: [embed]
+                // embeds: [{
+                //     color: '#0099ff',
+                //     title: 'New chat',
+                //     description: json['message']['text'],
+                //     fields: [
+                //         { name: 'Name', value: json['visitor']['name'], inline: true },
+                //         { name: 'Email', value: json['visitor']['email'], inline: true },
+                //         { name: 'From', value: json['visitor']['country'], inline: true }
+                //     ]
+                // }]
+            }).catch(console.error);
         }
     }
     
-    if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
-        // verification failed
-        console.log('failed verification')
-    }
+    // if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
+    //     // verification failed
+    //     console.log('failed verification')
+    // }
     
     // verification success
-    console.log('verification success');
-    tawkWebhook.send("You were mentioned!");
+    
 });
 app.listen(process.env.PORT || 3000, function () {
     console.log('App listening now');
