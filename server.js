@@ -20,22 +20,24 @@ const app = express();
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
-    console.log(body, signature)
     const digest = crypto
         .createHmac('sha1', process.env.TAWK_WEBHOOK_SECRET)
         .update(body)
         .digest('hex');
+    console.log('digest', digest, 'signature', signature)
     return signature === digest;
 };
 
 app.post('/webhooks', function (req, res, next) {
-    console.log(req.payload, res.payload)
     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
         // verification failed
+        console.log('failed verification')
+        console.log('req body', req.body)
     }
     
-    tawkWebhook.send("You were mentioned!");
     // verification success
+    console.log('verification success');
+    tawkWebhook.send("You were mentioned!");
 });
 app.listen(process.env.PORT || 3000, function () {
     console.log('Example app listening on port 3000!');
