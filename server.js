@@ -20,7 +20,7 @@ const app = express();
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
-    console.log(process.env.TAWK_WEBHOOK_SECRET)
+    console.log(body, signature)
     const digest = crypto
         .createHmac('sha1', process.env.TAWK_WEBHOOK_SECRET)
         .update(body)
