@@ -13,8 +13,7 @@ logger.level = 'debug';
 // Initialize Discord Bot
 //
 var Discord = require('discord.js');
-const discordWebhook = new Discord.WebhookClient('840090366741053490', 'p75U1289Qzik-_mPSLWKv4ExNw-G2Ck3O-vExupmPdw9EeK7-dE8RZpnKPwP4iPG8kUx');
-
+const discordWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
 //
 // Dependencies
 //
