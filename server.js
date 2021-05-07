@@ -63,6 +63,8 @@ app.post('/webhooks', function (req, res, next) {
             }).catch(console.error);
         }
     }
+
+    res.sendStatus(200);
     
     // if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
     //     // verification failed
