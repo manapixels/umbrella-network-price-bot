@@ -16,7 +16,7 @@ var Discord = require('discord.js');
 const tawkWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
 
 const express = require('express');
-const app = express();
+const app = express.Router();
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
@@ -29,10 +29,10 @@ function verifySignature (body, signature) {
 };
 
 app.post('/webhooks', function (req, res, next) {
+    console.log('req body', req.body)
     if (!verifySignature(req.rawBody, req.headers['x-tawk-signature'])) {
         // verification failed
         console.log('failed verification')
-        console.log('req body', req.body)
     }
     
     // verification success
