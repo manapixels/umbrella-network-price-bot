@@ -9,14 +9,18 @@ logger.add(new logger.transports.Console, {
 });
 logger.level = 'debug';
 
-
+//
 // Initialize Discord Bot
-
+//
 var Discord = require('discord.js');
 const tawkWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
 
+//
+// Dependencies
+//
 const express = require('express');
 const app = express();
+app.use(express.json())
 const crypto = require('crypto');
 
 function verifySignature (body, signature) {
@@ -40,5 +44,5 @@ app.post('/webhooks', function (req, res, next) {
     tawkWebhook.send("You were mentioned!");
 });
 app.listen(process.env.PORT || 3000, function () {
-    console.log('Example app listening on port 3000!');
+    console.log('App listening now');
 });
