@@ -55,7 +55,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
             // Who paid
             if (obj['receipt_email']) {
                 embed.addFields(
-                    { name: 'Email', value: obj['receipt_email'] }
+                    { name: 'Email', value: obj['receipt_email'] ? mask(obj['receipt_email']) : '') }
                 )
             }
 
