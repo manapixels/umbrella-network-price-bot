@@ -67,7 +67,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
 
             stripeToDiscordWebhook.send({ 
                 username: 'Stripe',
-                avatarURL: 'https://imgur.com/WNIZqdz',
+                avatarURL: 'https://i.imgur.com/WNIZqdz.png',
                 embeds: [embed]
             }).catch(console.error);
         }
