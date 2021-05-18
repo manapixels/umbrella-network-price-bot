@@ -14,6 +14,8 @@ logger.level = 'debug';
 //
 var Discord = require('discord.js');
 const discordWebhook = new Discord.WebhookClient('840026920695627826', 'gCoEpnZkLGd1Zv_D-5WSVrfwDbCrR1mBHffu39RFD4dk-_mBQNe-BOeFunostyYJaezp');
+
+const stripeToDiscordWebhook = new Discord.WebhookClient('844038845591060490', '_q35HQeY3ozplNjA9FiAzdc8a1B9D8ZlEUZIiJcui130M6aGAyZGDomFY4jQ19FBXA0Q');
 //
 // Dependencies
 //
@@ -29,6 +31,49 @@ function verifySignature (body, signature) {
         .digest('hex');
     return signature === digest;
 };
+
+app.post('/webhooks/stripe', function (req, res, next) {
+    
+    if (req['body']) {
+        const json = req['body']
+
+        if (json && json['data'] && json['data']['object'] && json['data']['object']) {
+            const obj = json['data']['object']
+            if (obj['object'] === 'payment_intent' && json['type'] === 'payment_intent.success') {
+                const embed = new Discord.MessageEmbed()
+                    .setColor('#0099ff')
+                    .setTitle('New Payment')
+                    .setDescription(`Someone paid $${obj['amount']} (${obj['currency']})`)
+
+                stripeToDiscordWebhook.send({ 
+                    username: 'Stripe',
+                    avatarURL: 'https://imgur.com/WNIZqdz',
+                    embeds: [embed]
+                    // embeds: [{
+                    //     color: '#0099ff',
+                    //     title: 'New chat',
+                    //     description: json['message']['text'],
+                    //     fields: [
+                    //         { name: 'Name', value: json['visitor']['name'], inline: true },
+                    //         { name: 'Email', value: json['visitor']['email'], inline: true },
+                    //         { name: 'From', value: json['visitor']['country'], inline: true }
+                    //     ]
+                    // }]
+                }).catch(console.error);
+            }
+        }
+    }
+
+    res.sendStatus(200);
+    
+    // if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
+    //     // verification failed
+    //     console.log('failed verification')
+    // }
+    
+    // verification success
+    
+});
 
 app.post('/webhooks', function (req, res, next) {
     
