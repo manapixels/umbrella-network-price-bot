@@ -32,35 +32,44 @@ function verifySignature (body, signature) {
     return signature === digest;
 };
 
+const mask = string => string.replace(
+    /(..)(.{1,2})(?=.*@)/g,
+    (_, a, b) => a + '*'.repeat(b.length)
+);
+
 app.post('/webhooks/stripe', function (req, res, next) {
     
     if (req['body']) {
         const json = req['body']
-
         if (json && json['data'] && json['data']['object'] && json['data']['object']) {
             const obj = json['data']['object']
-            if (obj['object'] === 'payment_intent' && json['type'] === 'payment_intent.success') {
-                const embed = new Discord.MessageEmbed()
-                    .setColor('#0099ff')
-                    .setTitle('New Payment')
-                    .setDescription(`Someone paid $${obj['amount']} (${obj['currency']})`)
 
-                stripeToDiscordWebhook.send({ 
-                    username: 'Stripe',
-                    avatarURL: 'https://imgur.com/WNIZqdz',
-                    embeds: [embed]
-                    // embeds: [{
-                    //     color: '#0099ff',
-                    //     title: 'New chat',
-                    //     description: json['message']['text'],
-                    //     fields: [
-                    //         { name: 'Name', value: json['visitor']['name'], inline: true },
-                    //         { name: 'Email', value: json['visitor']['email'], inline: true },
-                    //         { name: 'From', value: json['visitor']['country'], inline: true }
-                    //     ]
-                    // }]
-                }).catch(console.error);
+            const embed = new Discord.MessageEmbed().setColor('#0099ff')
+
+            // Successful Charge
+            if (obj['object'] === 'charge' && json['type'] === 'charge.succeeded') {
+                embed.setTitle('Payment Success')
+                    .setDescription(`Someone paid $${obj['amount']} (${obj['currency']})`)
             }
+            // Successful Top-up
+            if (obj['object'] === 'topup' && json['type'] === 'topup.succeeded') {
+                embed.setTitle('New Top-Up')
+                    .setDescription(`Someone topped-up $${obj['amount']} (${obj['currency']})`)
+            }
+
+            // Who paid
+            if (obj['billing_details']) {
+                embed.addFields(
+                    { name: 'Name', value: obj['billing_details']['name'], inline: true },
+                    { name: 'Email', value: mask(obj['billing_details']['email']), inline: true }
+                )
+            }
+
+            stripeToDiscordWebhook.send({ 
+                username: 'Stripe',
+                avatarURL: 'https://imgur.com/WNIZqdz',
+                embeds: [embed]
+            }).catch(console.error);
         }
     }
 
