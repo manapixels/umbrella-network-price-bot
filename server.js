@@ -35,7 +35,7 @@ function verifySignature (body, signature) {
 const mask = string => string.replace(
     /(..)(.{1,2})(?=.*@)/g,
     (_, a, b) => a + '*'.repeat(b.length)
-);
+).replace('*', '\*')
 
 app.post('/webhooks/stripe', function (req, res, next) {
     
