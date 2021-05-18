@@ -75,7 +75,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
     
 });
 
-app.post('/webhooks', function (req, res, next) {
+app.post('/webhooks/tawkto', function (req, res, next) {
     
     if (req['body']) {
         const json = req['body']
