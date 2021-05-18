@@ -48,13 +48,8 @@ app.post('/webhooks/stripe', function (req, res, next) {
 
             // Successful Charge
             if (obj['object'] === 'charge' && json['type'] === 'charge.succeeded') {
-                embed.setTitle('Payment Success')
-                    .setDescription(`Someone paid ${obj['currency']}$${obj['amount']}`)
-            }
-            // Successful Top-up
-            if (obj['object'] === 'topup' && json['type'] === 'topup.succeeded') {
-                embed.setTitle('New Top-Up')
-                    .setDescription(`Someone topped-up ${obj['currency']}$${obj['amount']}`)
+                embed.setTitle(obj['description'])
+                    .setDescription(`${obj['currency']}$${obj['amount'] ? obj['amount']/10 : '-'}`)
             }
 
             // Who paid
