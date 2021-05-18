@@ -42,7 +42,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
     if (req['body']) {
         const json = req['body']
 
-        console.log("json", json)
+        logger.info(json)
         if (json && json['data'] && json['data']['object'] && json['data']['object']) {
             const obj = json['data']['object']
 
