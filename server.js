@@ -41,9 +41,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
     
     if (req['body']) {
         const json = req['body']
-
-        logger.info(json)
-        if (json && json['data'] && json['data']['object'] && json['data']['object']) {
+        if (json && json['livemode'] === true && json['data'] && json['data']['object'] && json['data']['object']) {
             const obj = json['data']['object']
 
             const embed = new Discord.MessageEmbed().setColor('#0099ff')
@@ -60,10 +58,9 @@ app.post('/webhooks/stripe', function (req, res, next) {
             }
 
             // Who paid
-            if (obj['billing_details']) {
+            if (obj['receipt_email']) {
                 embed.addFields(
-                    { name: 'Name', value: obj['billing_details']['name'] ? obj['billing_details']['name'] : "", inline: true },
-                    { name: 'Email', value: obj['billing_details']['email'] ? mask(obj['billing_details']['email']) : "", inline: true }
+                    { name: 'Email', value: obj['receipt_email'] }
                 )
             }
 
@@ -75,7 +72,7 @@ app.post('/webhooks/stripe', function (req, res, next) {
         }
     }
 
-    res.sendStatus(200);
+    res.sendStatus(200).end();
     
     // if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
     //     // verification failed
@@ -120,7 +117,7 @@ app.post('/webhooks/tawkto', function (req, res, next) {
         }
     }
 
-    res.sendStatus(200);
+    res.sendStatus(200).end();
     
     // if (!verifySignature(req.body, req.headers['x-tawk-signature'])) {
     //     // verification failed
