@@ -1,141 +1,121 @@
-// const { google } = require('googleapis')
 const logger = require('winston')
 const Discord = require('discord.js')
+const { ethers } = require('ethers')
+const { ContractRegistry, ChainContract, APIClient } = require('@umb-network/toolbox')
 
+//
+// Inintialisation
+//
 require('dotenv').config()
 
-// const googleAccounts = google.analytics('v3')
-// const googleAnalytics = google.analyticsreporting('v4')
+const { 
+    UMBRELLA_API_URL, 
+    UMBRELLA_API_KEY,
+    UMBRELLA_REGISTRY_CONTRACT_ADDRESS,
+    BLOCKCHAIN_PROVIDER_URL,
+} = process.env
 
-// const clientID = process.env.CLIENT_ID
-// const clientSecret = process.env.CLIENT_SECRET
-// const oauth2Client = new google.auth.OAuth2(clientID, clientSecret)
-// const url = oauth2Client.generateAuthUrl({
-// 	access_type: 'online',
-// 	scope: 'https://www.googleapis.com/auth/analytics.readonly'
-// })
-/**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
-
-// const {client_secret, client_id, redirect_uris} = credentials.installed;
-// const oAuth2Client = new google.auth.OAuth2(
-//     client_id, client_secret, redirect_uris[0]);
-
-// // Check if we have previously stored a token.
-// fs.readFile(TOKEN_PATH, (err, token) => {
-//     if (err) return getAccessToken(oAuth2Client, callback);
-//     oAuth2Client.setCredentials(JSON.parse(token));
-// });
+logger.remove(logger.transports.Console)
+logger.add(new logger.transports.Console, { colorize: true })
+logger.level = 'debug'
 
 
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
-
-
+//
 // Initialize Discord Bot
-
-
-const client = new Discord.Client();
+//
+const client = new Discord.Client()
 
 client.on('ready', function (evt) {
-    logger.info('Connected');
-    logger.info('Logged in as: ' + client.user.username);
-});
+    logger.info('Connected')
+    logger.info('Logged in as: ' + client.user.username)
+    getPriceData()
+    setInterval(getPriceData, 30000) // Get new data every 30 secs
+})
 
 client.on("message", message => {
-    if (message.content === "hey") {
-        message.reply("hi there")
+    logger.info("message: ", message.content)
+    if (message.content === '!tickers' || message.content === '!ticker') {
+        if (Object.keys(priceData).length > 0) {
+            let supportedTickers = Object.keys(priceData).map(ticker => ticker).join(', ')
+            message.reply(`\n\nSupported tickers:\n\n ${supportedTickers}`)
+        }
+    }
+    else if (message.content && message.content[0] === '!' && message.content.length > 1) {
+        const symbol = message.content.replace("!", "").toUpperCase()
+        const price = priceData && priceData[symbol]
+        if (price) {
+            message.reply(`Changed bot price to ${symbol}`)
+            client.user.setActivity(`${symbol} $${price}`, { type: 'WATCHING' })
+                .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+                .catch(error => {
+                    logger.error(error)
+                    message.reply(`Error changing activity`)
+                })
+        } else {
+            message.reply(`Ticker not supported. Let us know if you want ${symbol} included 😉`)
+        }
     }
 })
 
-client.login(process.env.BOT_TOKEN)
+//
+// Fetch Price Data
+//
 
-//
-// Pull Google Analytics
-//
-function getData() {
-    googleAnalytics.reports.batchGet(
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            auth: oauth2Client,
-            resource: {
-                reportRequests: [{
-                    viewId: "ga:206687613",
-                    metrics: [
-                        {
-                            expression: "rt:activeUsers"
-                        }
-                    ]
-                }]
-            }
-        },
-        (err, data) => {
-            if (err) {
-                console.error('Error: ' + err)
-            } else if (data) {
-                logger.info("data: ", data)
-                // let views = []
-                // let max = 0
-                // data.reports[0].data.rows.forEach(view => {
-                //     views.push(view.metrics[0].values[0])
-                //     if (parseInt(view.metrics[0].values[0]) > parseInt(max)) max = view.metrics[0].values[0]
-                // })
-                // res.send([views, max])
+let apiClient = undefined
+let priceData = {}
+
+async function setApiClient() {
+    const provider = new ethers.providers.JsonRpcProvider(BLOCKCHAIN_PROVIDER_URL)
+    const contractRegistry = new ContractRegistry(provider, UMBRELLA_REGISTRY_CONTRACT_ADDRESS)
+    const chainContractAddress = await contractRegistry.getAddress('Chain')
+    const chainContract = new ChainContract(provider, chainContractAddress)
+    
+    apiClient = new APIClient({
+        baseURL: UMBRELLA_API_URL,
+        chainContract,
+        apiKey: UMBRELLA_API_KEY,
+    })
+
+    getPriceData()
+}
+async function getPriceData() {
+    if (apiClient === undefined) {
+        await setApiClient()
+    }
+    else if (apiClient && BLOCKCHAIN_PROVIDER_URL && UMBRELLA_REGISTRY_CONTRACT_ADDRESS && UMBRELLA_API_KEY) {
+        logger.info("Fetching price data...")
+        const getNewestBlockResult = await apiClient.getNewestBlock()
+        const getLeavesOfBlockResult = await apiClient.getLeavesOfBlock(getNewestBlockResult.blockId);
+
+        let formattedResult = []
+        for (let i=0; i<getLeavesOfBlockResult.length; i++) {
+            const ticker = getLeavesOfBlockResult[i]
+            // Store only USD values
+            if (ticker.key.includes('-USD')) {
+                formattedResult.push({
+                    symbol: ticker.key.replace('-USD', ''),
+                    value: ticker.value && parseFloat(ethers.utils.formatEther( ticker.value ))
+                })
             }
         }
-    )
-    // google.analytics('v3').data().realtime().get({
-    //     auth: process.env.GOOGLE_API_SECRET,
-    //     ids: "ga:206687613",
-    //     metrics: "rt:activeUsers"
-    // })
-    // .then(res => {
-    //     console.log(`GA Data: `, res);
-    // })
-    // .catch(error => {
-    //     console.error(error);
-    // })
-    // logger.info(result);
+        formattedResult
+            .map( j => {
+                priceData[j.symbol] = j.value
+            })
+        logger.info(priceData)
+
+        
+        // Set default ticker to BTC if none is found
+
+        if (client.user.presence && client.user.presence.activities && client.user.presence.activities.length === 0) {
+            client.user.setActivity(`BTC $${priceData['BTC']}`, { type: 'WATCHING' })
+                .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+                .catch(error => {
+                    logger.error(error)
+                    message.reply(`Error changing activity`)
+                })
+        }
+    }
 }
-// getData()
-// fetch(`${GA_API}/data/realtime`, {
-//     method: 'GET', // or 'PUT'
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(data),
-//   })
-//   .then(response => response.json())
 
-// Configure logger settings
-
-
-// bot.on('message', function (user, userID, channelID, message, evt) {
-//     // Our bot needs to know if it will execute a command
-//     // It will listen for messages that will start with `!`
-//     if (message.substring(0, 1) == '!') {
-//         var args = message.substring(1).split(' ');
-//         var cmd = args[0];
-       
-//         args = args.splice(1);
-//         switch(cmd) {
-//             // !ping
-//             case 'ping':
-//                 bot.sendMessage({
-//                     to: channelID,
-//                     message: 'Pong!'
-//                 });
-//             break;
-//             // Just add any case commands if you want to..
-//          }
-//      }
-// });
+client.login(process.env.CLIENT_TOKEN)

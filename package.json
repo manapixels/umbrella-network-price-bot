@@ -1,20 +1,23 @@
 {
-    "name": "selfi-support-bot",
+    "name": "umbrella-network-price-bot",
     "version": "1.0.0",
-    "description": "A bot that links tawk.to to Selfi's Discord channel",
-    "main": "app.js",
+    "description": "",
+    "main": "bot.js",
     "author": "Zhenyang",
     "dependencies": {
+        "@umb-network/toolbox": "^3.3.1",
+        "axios": "^0.21.1",
         "crypto": "^1.0.1",
         "discord.js": "^12.5.3",
         "dotenv": "^9.0.0",
+        "ethers": "^5.4.2",
         "express": "^4.17.1",
         "googleapis": "^73.0.0",
         "nodemon": "^2.0.7",
         "winston": "^3.3.3"
     },
     "scripts": {
-        "start": "node server.js",
+        "start": "node bot.js",
         "devStart": "nodemon index.js"
     }
 }
