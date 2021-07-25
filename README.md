@@ -26,7 +26,7 @@
 
 <br/><br/>
 
-# Use my demo 😉
+# Or add my demo 😉
 
 1. Go to https://discord.com/api/oauth2/authorize?client_id=868744432411873280&permissions=0&scope=bot
 2. Add it to your server
@@ -45,3 +45,5 @@
 ```
 !eth
 ```
+
+![Demo animation](https://raw.githubusercontent.com/zhenyangg/umbrella-network-price-bot/master/demo.webp)
