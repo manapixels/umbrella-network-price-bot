@@ -118,4 +118,4 @@ async function getPriceData() {
     }
 }
 
-client.login(process.env.CLIENT_TOKEN)
+client.login(process.env.DISCORD_CLIENT_SECRET)
