@@ -9,13 +9,13 @@
     1. Create a .env file in the project root folder
     2. Input the following in the file:
         ```
-        DISCORD_CLIENT_SECRET=XXX
+        DISCORD_BOT_TOKEN=XXX
         UMBRELLA_API_KEY=XXX
         UMBRELLA_API_URL=https://api.dev.umb.network
         UMBRELLA_REGISTRY_CONTRACT_ADDRESS=XXX
         BLOCKCHAIN_PROVIDER_URL=https://kovan.infura.io/v3/YOUR_KEY_HERE
         ```
-        - DISCORD_CLIENT_SECRET [How to get](https://www.bitdegree.org/learn/how-to-make-a-discord-bot)
+        - DISCORD_BOT_TOKEN [How to get](https://www.bitdegree.org/learn/how-to-make-a-discord-bot)
         - UMBRELLA_API_KEY [How to get](https://umbrella-network.readme.io/docs/api-token)
         - UMBRELLA_API_URL [Available networks](https://umbrella-network.readme.io/docs/developer-api)
         - BLOCKCHAIN_PROVIDER_URL [Get from infura](https://infura.io/)
